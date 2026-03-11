@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy import text
 from app.services.github_service import collect_files
 from app.services.chunking_service import chunk_files
-from app.services.embedding_service import model
+from app.services.embedding_service import get_embeddings_batch
 from app.services.analysis_service import run_analysis
 from app.core.database import get_db
 
@@ -45,17 +45,11 @@ def _background_task(project_id: int, github_url: str):
         chunks = chunk_files(files)
         _set_progress(project_id, "CHUNKING", 55, f"청크 {len(chunks)}개 생성 완료")
 
-        # 3. 임베딩 (16개씩 배치 처리)
+        # 3. 임베딩 (배치 처리)
         texts = [c["content"] for c in chunks]
-        all_embeddings = []
-        total = len(texts)
-        batch_size = 16
-        for i in range(0, total, batch_size):
-            batch = texts[i:i + batch_size]
-            all_embeddings.extend(model.encode(batch, normalize_embeddings=True).tolist())
-            pct = 55 + int((i + len(batch)) / total * 35)
-            fname = chunks[i]["file_path"].split("/")[-1]
-            _set_progress(project_id, "EMBEDDING", pct, f"임베딩 중: {fname} ({i + len(batch)}/{total})")
+        _set_progress(project_id, "EMBEDDING", 60, f"임베딩 중... (총 {len(texts)}개 청크)")
+        all_embeddings = get_embeddings_batch(texts)
+        _set_progress(project_id, "EMBEDDING", 90, "임베딩 완료")
 
         # 4. 저장
         _set_progress(project_id, "SAVING", 92, "벡터 DB 저장 중...")
