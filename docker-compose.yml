@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: projectlens-db
+    environment:
+      POSTGRES_USER: projectlens
+      POSTGRES_PASSWORD: projectlens
+      POSTGRES_DB: projectlens
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
