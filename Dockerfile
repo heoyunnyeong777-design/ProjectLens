@@ -8,12 +8,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# CPU 전용 torch 먼저 설치 (용량 대폭 감소: 2.5GB → 200MB)
-RUN pip install --no-cache-dir \
-    torch==2.3.1+cpu \
-    --index-url https://download.pytorch.org/whl/cpu
-
-# 나머지 의존성 설치
+# 의존성 설치
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
