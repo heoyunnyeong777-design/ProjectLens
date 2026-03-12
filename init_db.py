@@ -38,6 +38,7 @@ def init_db():
                 analysis_structure TEXT,
                 analysis_features TEXT,
                 analysis_architecture TEXT,
+                analysis_improvements TEXT,
                 analysis_report TEXT,
                 last_synced TIMESTAMP,
                 created_at TIMESTAMP DEFAULT NOW()
@@ -53,6 +54,7 @@ def init_db():
             "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_structure TEXT",
             "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_features TEXT",
             "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_architecture TEXT",
+            "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_improvements TEXT",
             "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_report TEXT",
         ]
         for sql in alter_columns:
