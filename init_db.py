@@ -34,11 +34,33 @@ def init_db():
                 file_count INTEGER DEFAULT 0,
                 progress INTEGER DEFAULT 0,
                 current_file VARCHAR DEFAULT '',
+                analysis_status VARCHAR DEFAULT 'PENDING',
+                analysis_structure TEXT,
+                analysis_features TEXT,
+                analysis_architecture TEXT,
+                analysis_report TEXT,
                 last_synced TIMESTAMP,
                 created_at TIMESTAMP DEFAULT NOW()
             )
         """))
         print("OK projects 테이블")
+
+        # 기존 테이블에 누락된 컬럼 추가 (이미 있으면 무시)
+        alter_columns = [
+            "ALTER TABLE projects ADD COLUMN IF NOT EXISTS progress INTEGER DEFAULT 0",
+            "ALTER TABLE projects ADD COLUMN IF NOT EXISTS current_file VARCHAR DEFAULT ''",
+            "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_status VARCHAR DEFAULT 'PENDING'",
+            "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_structure TEXT",
+            "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_features TEXT",
+            "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_architecture TEXT",
+            "ALTER TABLE projects ADD COLUMN IF NOT EXISTS analysis_report TEXT",
+        ]
+        for sql in alter_columns:
+            try:
+                conn.execute(text(sql))
+            except Exception:
+                pass
+        print("OK 누락 컬럼 추가 완료")
 
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS code_chunks (
