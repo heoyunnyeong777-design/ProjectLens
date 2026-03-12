@@ -8,6 +8,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import projects
 from app.api import chat
 from app.api import analysis
+from init_db import init_db
+
+# DB 초기화 (서버 시작 시 자동 실행)
+try:
+    init_db()
+    print("✅ DB 초기화 완료!")
+except Exception as e:
+    print(f"⚠️ DB 초기화 실패: {e}")
 
 # FastAPI 앱 생성
 # Java로 치면 Spring Boot 애플리케이션 시작점이에요
